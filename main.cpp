@@ -1,6 +1,3 @@
-// CircleDetection.cpp : 定义控制台应用程序的入口点。
-//
-
 #include "stdafx.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -8,7 +5,7 @@
 
 using namespace cv;
 using namespace std;
-
+vector<Vec3f> circles;
 static void help()
 {
 	cout << "\nThis program demonstrates circle finding with the Hough transform.\n"
@@ -25,7 +22,7 @@ double dist(Point A, Point B)
 /**
 	求两个圆之间的距离
 **/
-double circleDistance(Vec3i A, Vec3i B)
+double circleDistance(Vec3f A, Vec3f B)
 {
 	double dis = sqrt((A[0] - B[0])*(A[0] - B[0]) + (A[1] - B[1])*(A[1] - B[1]));
 	return dis;
@@ -34,7 +31,7 @@ double circleDistance(Vec3i A, Vec3i B)
 /**
 	返回距离输入的圆最近的圆
 **/
-size_t minDistanceCircle(vector<Vec3f>circlesTemp, Vec3i circleInput, size_t circleInputIndex)
+size_t minDistanceCircle(vector<Vec3f>circlesTemp, Vec3f circleInput, size_t circleInputIndex)
 {
 	double minDistance = (double)INT_MAX;
 	size_t minIndex = 0;
@@ -51,19 +48,19 @@ size_t minDistanceCircle(vector<Vec3f>circlesTemp, Vec3i circleInput, size_t cir
 /**
 	交换两个圆
 **/
-vector<Vec3f>switchCircles(vector<Vec3f>circlesTemp, size_t indexA, size_t indexB)
+void switchCircles(size_t indexA, size_t indexB)
 {
 	Vec3i simpleCircle;
-	simpleCircle = circlesTemp[indexA];
-	circlesTemp[indexA] = circlesTemp[indexB];
-	circlesTemp[indexB] = simpleCircle;
-	return circlesTemp;
+	simpleCircle = circles[indexA];
+	circles[indexA] = circles[indexB];
+	circles[indexB] = simpleCircle;
 }
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
-	const char* filename = argc >= 2 ? argv[1] : "../image/随机2.png";
+	//const char* filename = argc >= 2 ? argv[1] : "../image/随机2.png";
+	const char* filename = "../image/random1.png";
 
 	Mat img = imread(filename, 0);     //img灰度的
 	if (img.empty())
@@ -77,9 +74,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	medianBlur(img, img, 5);
 	cvtColor(img, cimg, COLOR_GRAY2BGR);   //cimg彩色的
 
-	vector<Vec3f> circles;
 	HoughCircles(img, circles, CV_HOUGH_GRADIENT, 1, 50,
-		100, 30, 20, 60 // change the last two parameters
+		100, 30, 1, 60 // change the last two parameters
 		// (min_radius & max_radius) to detect larger circles
 		);
 
@@ -96,17 +92,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	//将起始圆放到circle的起始位置
-	circles = switchCircles(circles, 0, minXYIndex);
+	switchCircles(0, minXYIndex);
 	//依次找到后续的圆
 	for (int i = 0; i < circles.size() - 1; i++)
 	{
 		minXYIndex = minDistanceCircle(circles, circles[i], i);
-		circles = switchCircles(circles, i + 1, minXYIndex);
+		switchCircles(i + 1, minXYIndex);
 	}
 	//画圆，编号
 	for (size_t i = 0; i < circles.size(); i++)
 	{
-		Vec3i c = circles[i];	//圆心，半径
+		Vec3f c = circles[i];	//圆心，半径
 		circle(cimg, Point(c[0], c[1]), c[2], Scalar(0, 0, 255), 3, CV_AA);	//圆
 		circle(cimg, Point(c[0], c[1]), 1, Scalar(0, 255, 0), 3, CV_AA);	//圆心
 		char words[20];
@@ -118,13 +114,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	//连线
 	for (size_t i = 0; i < circles.size() - 1; i++)
 	{
-		Vec3i pointBegin = circles[i];
-		Vec3i pointEnd = circles[i+1];
+		Vec3f pointBegin = circles[i];
+		Vec3f pointEnd = circles[i+1];
 		line(cimg, Point(pointBegin[0], pointBegin[1]), Point(pointEnd[0], pointEnd[1]), Scalar(255, 0, 0), 1, CV_AA);
 	}
 	imshow("detected circles", cimg);
-	waitKey();
-	exit(0);
+	waitKey(0);
+	//exit(0);
 	return 0;
 }
 
