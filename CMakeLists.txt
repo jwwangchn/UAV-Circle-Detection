@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(uav-circle-detection)
 
 # 生成release版本
-SET(CMAKE_BUILD_TYPE "release")
+SET(CMAKE_BUILD_TYPE "DEBUG")
 
 if (CMAKE_BUILD_TYPE STREQUAL debug)
     ADD_DEFINITIONS(-D_DEBUG)
@@ -21,7 +21,7 @@ INCLUDE_DIRECTORIES(./)
 IF(WIN32)
 # Windows平台执行
 
-INCLUDE("D:/opencv2411_my/build/OpenCVConfig.cmake")
+INCLUDE($ENV{OPENCV_2413_PREBUILD_DIR}/OpenCVConfig.cmake)
 message( STATUS "OpenCV library status:" )              # 输出一下得到的变量
 message( STATUS "    version: ${OpenCV_VERSION}" )
 message( STATUS "    libraries: ${OpenCV_LIBS}" )
