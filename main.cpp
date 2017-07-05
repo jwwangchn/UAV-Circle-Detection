@@ -159,7 +159,7 @@ int main()
 
 
 
-// // CircleDetection.cpp : ??????????ó????????
+// // CircleDetection.cpp : 定义控制台应用程序的入口点。
 // //
 
 // #include "stdafx.h"
@@ -187,7 +187,7 @@ int main()
 
 
 // /**
-// ????????????????
+// 求两个圆心之间的距离
 // **/
 // double circleDistance(Vec3i A, Vec3i B)
 // {
@@ -196,7 +196,7 @@ int main()
 // }
 
 // ///**
-// //???????????????????
+// //返回距离输入的圆最近的圆
 // //**/
 // //size_t minDistanceCircle(vector<Vec3f>circlesTemp, Vec3i circleInput, size_t circleInputIndex)
 // //{
@@ -214,7 +214,7 @@ int main()
 // //}
 // //
 // ///**
-// //?????????
+// //交换两个圆
 // //**/
 // //void switchCircles(size_t indexA, size_t indexB)
 // //{
@@ -227,25 +227,25 @@ int main()
 
 // int _tmain(int argc, _TCHAR* argv[])
 // {
-// 	//	const char* filename = argc >= 2 ? argv[1] : "U?????.png";
-// 	//	const char* filename = argc >= 2 ? argv[1] : "???·??.png";
-// 	//	const char* filename = argc >= 2 ? argv[1] : "?????.png";
-// 	//	const char* filename = argc >= 2 ? argv[1] : "???.png";
-// 	//	const char* filename = argc >= 2 ? argv[1] : "???3.png";
+// 	//	const char* filename = argc >= 2 ? argv[1] : "U形转弯.png";
+// 	//	const char* filename = argc >= 2 ? argv[1] : "十字路口.png";
+// 	//	const char* filename = argc >= 2 ? argv[1] : "直角弯.png";
+// 	//	const char* filename = argc >= 2 ? argv[1] : "直线.png";
+// 	//	const char* filename = argc >= 2 ? argv[1] : "随机3.png";
 // 	//  const char* filename = argc >= 2 ? argv[1] : "test1.png";
-// 	const char* filename = argc >= 2 ? argv[1] : "???4.png";
+// 	const char* filename = argc >= 2 ? argv[1] : "真实4.png";
 
-// 	Mat img = imread(filename, 1);     //img??????
+// 	Mat img = imread(filename, 1);     //img是彩色的
 // 	if (img.empty())
 // 	{
 // 		help();
 // 		cout << "can not open " << filename << endl;
 // 		return -1;
 // 	}
-// 	Mat Gimg;    //??????
-// 	cvtColor(img, Gimg, COLOR_BGR2GRAY);   //Gimg????
+// 	Mat Gimg;    //灰度备份
+// 	cvtColor(img, Gimg, COLOR_BGR2GRAY);   //Gimg灰度的
 
-// 	cout << " row: " << Gimg.rows << " col: " << Gimg.cols << endl;  //?????????
+// 	cout << " row: " << Gimg.rows << " col: " << Gimg.cols << endl;  //显示图像高和宽
 // 	imshow("Input", img);
 
 
@@ -283,7 +283,7 @@ int main()
 // 	Mat cimg;
 // 	//	medianBlur(img, img, 5);
 // 	GaussianBlur(img, img, Size(5, 5), 2, 2);
-// 	cvtColor(img, cimg, COLOR_GRAY2BGR);   //cimg?????
+// 	cvtColor(img, cimg, COLOR_GRAY2BGR);   //cimg彩色的
 
 
 
@@ -298,7 +298,7 @@ int main()
 // 		// (min_radius & max_radius) to detect larger circles
 // 		);
 
-// 	//??????????,???????
+// 	//寻找左下角的圆,作为起始圆
 // 	//int minDistance = INT_MAX;
 // 	//int minXYIndex = 0;
 // 	//for (int i = 0; i < circles.size(); i++)
@@ -310,7 +310,7 @@ int main()
 // 	//	}
 // 	//}
 
-// 	////?????????circle?????λ??
+// 	////将起始圆放到circle的起始位置
 // 	//if (circles.size() <= 0)
 // 	//{
 // 	//	cout << "no circle found" << endl;
@@ -318,14 +318,14 @@ int main()
 // 	//}
 // 	//switchCircles(0, minXYIndex);
 
-// 	////??????????????
+// 	////依次找到后续的圆
 // 	//for (int i = 0; i < circles.size() - 1; i++)
 // 	//{
 // 	//	minXYIndex = minDistanceCircle(circles, circles[i], i);
 // 	//	switchCircles(i + 1, minXYIndex);
 // 	//}
 
-// 	//???
+// 	//画圆
 // 	for (size_t i = 0; i < circles.size(); i++)
 // 	{
 // 		Vec3i c = circles[i];
@@ -334,19 +334,19 @@ int main()
 // 		char words[20];
 // 		sprintf_s(words, "%d", i);
 // 		putText(cimg, words, Point(c[0], c[1]), CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 0, 0));
-// 		cout << "x??" << c[0] << " y: " << c[1] << " Radius:" << c[2] << endl;
+// 		cout << "x：" << c[0] << " y: " << c[1] << " Radius:" << c[2] << endl;
 // 	}
 
-// 	////????????????????????????Rs
+// 	////计算图中圆直径的均值以及扫描阈值Rs
 // 	//for (size_t i = 0; i < circles.size(); i++)
 // 	//{
 // 	//	AveDiameter = AveDiameter + circles[i][2];
 // 	//}
 // 	//AveDiameter = 2 * AveDiameter / circles.size();
 // 	//Rs = 4 * AveDiameter;
-// 	//cout << "???????? " << AveDiameter << "  ?????? " << Rs << endl;
+// 	//cout << "平均直径： " << AveDiameter << "  扫描半径： " << Rs << endl;
 
-// 	////????
+// 	////连线
 // 	//for (size_t i = 0; i < circles.size() - 1; i++)
 // 	//{
 // 	//	Vec3i pointBegin = circles[i];
@@ -354,9 +354,9 @@ int main()
 // 	//	line(cimg, Point(pointBegin[0], pointBegin[1]), Point(pointEnd[0], pointEnd[1]), Scalar(255, 0, 0), 1, CV_AA);
 // 	//}
 
-// 	//????б??????
+// 	//计算斜率及偏角
 
-// 	//??????????
+// 	//计算距离矩阵
 // 	Vector<Vector<double>> disMat(circles.size());
 // 	for (int i = 0; i<circles.size(); i++)
 // 	{
@@ -382,6 +382,10 @@ int main()
 // 	waitKey();
 // 	return 0;
 // }
+
+
+
+
 
 
 
