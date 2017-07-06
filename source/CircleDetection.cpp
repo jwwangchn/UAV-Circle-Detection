@@ -141,7 +141,7 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	}
 	cout << " disMat[1][2]: " << disMat[1][2] << endl;
 
-	//imshow("detected circles", cimg);
+	imshow("detected circles", cimg);
 
 	pair<vector<vector<double>>, vector<Vec3f>> results;
 	results.first = disMat;
