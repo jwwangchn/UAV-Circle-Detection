@@ -7,6 +7,7 @@ fi
 cd build
 
 # 编译并运行
+make clean
 cmake ..
 make
 ./uav-circle-detection

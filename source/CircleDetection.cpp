@@ -13,23 +13,36 @@ double circleDistance(Vec3i A, Vec3i B)
 	return dis;
 }
 
+//画圆
+void paintCircles(Mat img)
+{
+	Mat multiChannelImg;
+	cvtColor(img, multiChannelImg, COLOR_GRAY2BGR);
+	for (int i = 0; i < circles.size(); i++)
+	{
+		Vec3i singleCircle = circles[i];
+		circle(multiChannelImg, Point(singleCircle[0], singleCircle[1]), singleCircle[2], Scalar(0, 0, 255), 3, CV_AA);
+		circle(multiChannelImg, Point(singleCircle[0], singleCircle[1]), 1, Scalar(0, 255, 0), 3, CV_AA);
+		char words[20];
+		sprintf(words, "%d", i);
+		putText(multiChannelImg, words, Point(singleCircle[0], singleCircle[1]), CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 0, 0));
+		imshow("Detection Result",multiChannelImg);
+		// cout << "x:" << c[0] << " y:" << c[1] << " Radius:" << c[2] << endl;
+	}
+}
 
 pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 {
-    Mat Gimg;							 //灰度备份
-	cvtColor(img, Gimg, COLOR_BGR2GRAY); //Gimg灰度的
-
-	cout << " row: " << Gimg.rows << " col: " << Gimg.cols << endl; //显示图像高和宽
-
+	//Devide multi channels
 	vector<Mat> channels;
 	Mat BlueChannel, GreenChannel, RedChannel;
 	split(img, channels);
 	BlueChannel = channels.at(0);
 	GreenChannel = channels.at(1);
 	RedChannel = channels.at(2);
-	for (int i = 0; i < Gimg.cols; i++)
+	for (int i = 0; i < img.cols; i++)
 	{
-		for (int j = 0; j < Gimg.rows; j++)
+		for (int j = 0; j < img.rows; j++)
 		{
 			double Th1 = (double)(RedChannel.at<uchar>(j, i) - GreenChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
 			double Th2 = (double)(RedChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
@@ -51,19 +64,16 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	merge(channels, img);
 	cvtColor(img, img, COLOR_BGR2GRAY);
 
-	Mat cimg;
 	//	medianBlur(img, img, 5);
 	GaussianBlur(img, img, Size(5, 5), 2, 2);
-	cvtColor(img, cimg, COLOR_GRAY2BGR); //cimg彩色的
-
 	double AveDiameter = 0;
 	double Rs = 0;
 
-	HoughCircles(img, circles, CV_HOUGH_GRADIENT, 1, 10,
-				 100, 18, 8, 20 // change the last two parameters
-				 // (min_radius & max_radius) to detect larger circles
-				 );
+	HoughCircles(img, circles, CV_HOUGH_GRADIENT, 1, 10, 100, 18, 8, 20);
 
+#ifdef SHOW_DETECTION_RESULT
+	paintCircles(img);
+#endif
 	//寻找左下角的圆,作为起始圆
 	//int minDistance = INT_MAX;
 	//int minXYIndex = 0;
@@ -91,17 +101,8 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	//	switchCircles(i + 1, minXYIndex);
 	//}
 
-	//画圆
-	for (size_t i = 0; i < circles.size(); i++)
-	{
-		Vec3i c = circles[i];
-		circle(cimg, Point(c[0], c[1]), c[2], Scalar(0, 0, 255), 3, CV_AA);
-		circle(cimg, Point(c[0], c[1]), 1, Scalar(0, 255, 0), 3, CV_AA);
-		char words[20];
-		sprintf(words, "%d", i);
-		putText(cimg, words, Point(c[0], c[1]), CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 0, 0));
-		cout << "x:" << c[0] << " y:" << c[1] << " Radius:" << c[2] << endl;
-	}
+
+	
 
 	////计算图中圆直径的均值以及扫描阈值Rs
 	//for (size_t i = 0; i < circles.size(); i++)
@@ -139,7 +140,6 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 				disMat[i][j] = INT_MAX;
 		}
 	}
-	cout << " disMat[1][2]: " << disMat[1][2] << endl;
 
 	//imshow("detected circles", cimg);
 

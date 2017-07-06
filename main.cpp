@@ -23,14 +23,12 @@ static void help()
 }
 int main()
 {
+	clock_t start, finish;
+	double duration;
+	start = clock();
 	//打开图
-<<<<<<< HEAD
-	//const char *filename = "../image/random.png";
-	const char *filename = "../image/realTest4.png";
-=======
-	const char *filename = "../image/real5.jpg";
-	
->>>>>>> origin/master
+	const char *filename = "../image/random1.png";
+	// const char *filename = "../image/realTest4.png";
 	// const char *filename = "../image/simTest.png";
 	Mat img = imread(filename, 1); //img是彩色的
 	if (img.empty())
@@ -39,13 +37,14 @@ int main()
 		cout << "can not open " << filename << endl;
 		return -1;
 	}
-	Size size(1000, 750);
-	resize(img,img,size);
+	// Size size(1000, 750);
+	// resize(img,img,size);
 	//检测圆，得到圆心距离和数量
 	pair<vector<vector<double>>, vector<Vec3f>> results = circleDetection(img);
 	vector<vector<double>> disMat = results.first;
 	vector<Vec3f> circles = results.second;
 
+	
 	//图节点数量
 	int V = circles.size();
 
@@ -84,7 +83,13 @@ int main()
 		Vec3i pointEnd = circles[mst[i].w()];
 		line(img, Point(pointBegin[0], pointBegin[1]), Point(pointEnd[0], pointEnd[1]), Scalar(0, 0, 255), 1, CV_AA);
 	}
-	imshow("result",img);
+	
+	finish = clock();
+	duration = (double)(finish - start) / CLOCKS_PER_SEC;
+	
+	cout << "Image size: " << img.cols << " * " << img.rows<<endl;
+	cout << "Used time: " << duration << endl;
+	imshow("Paint Line Result", img);
 	waitKey();
 	return 0;
 }
