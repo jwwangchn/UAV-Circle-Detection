@@ -4,12 +4,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 # 项目信息
 PROJECT(uav-circle-detection)
 
-# 生成release版本
-SET(CMAKE_BUILD_TYPE "RELEASE")
+# # 生成release版本
+# SET(CMAKE_BUILD_TYPE "RELEASE")
 
-if (CMAKE_BUILD_TYPE STREQUAL debug)
-    ADD_DEFINITIONS(-D_DEBUG)
-endif ()
+# if (CMAKE_BUILD_TYPE STREQUAL debug)
+#     ADD_DEFINITIONS(-D_DEBUG)
+# endif ()
 
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++11")
