@@ -107,9 +107,10 @@ int main()
 				}
 				thetaMatrix.push_back(theta);
 				double intercept = ((double)circles[mst[i].v()][1] / (double)circles[mst[i].v()][0] - (double)circles[mst[i].w()][1] / (double)circles[mst[i].w()][0]) * (1 / ((double)circles[mst[i].v()][0]) - 1 / ((double)circles[mst[i].w()][0]));
-				double distance = ((MAX_LINE + MIN_LINE) / 2.0 - intercept) / (dy / dx) + 240;
+				double k = dy/dx;
+				double distance = 320 - ((MAX_LINE + MIN_LINE) / 2.0 - (circles[mst[i].v()][1] - k * circles[mst[i].v()][0])) / k;
 				cout << mst[i].v() << "---------------" << mst[i].w() << endl;
-				cout << "Jieju: " << distance << endl;
+				cout << "distance: " << distance << endl;
 				cout << "Line theta: " << theta[2] << endl;
 			}
 		}
