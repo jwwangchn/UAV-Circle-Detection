@@ -37,13 +37,17 @@ int main()
 		cout << "can not open " << filename << endl;
 		return -1;
 	}
-	// Size size(1000, 750);
-	// resize(img,img,size);
+	Size size(640, 360);
+	resize(img,img,size);
 	//检测圆，得到圆心距离和数量
 	pair<vector<vector<double>>, vector<Vec3f>> results = circleDetection(img);
 	vector<vector<double>> disMat = results.first;
 	vector<Vec3f> circles = results.second;
-
+	if(circles.size() == 0)
+	{
+		cout << "can't detect circle"<< endl;
+		return 0;
+	}
 	
 	//图节点数量
 	int V = circles.size();

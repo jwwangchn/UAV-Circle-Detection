@@ -30,11 +30,14 @@ INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 ELSEIF(UNIX)
 # Linux平台执行
 
-FIND_PACKAGE(OpenCV REQUIRED)
+# FIND_PACKAGE(OpenCV REQUIRED)
+INCLUDE(/usr/local/share/OpenCV/OpenCVConfig.cmake)
+
 message( STATUS "OpenCV library status:" )              # 输出一下得到的变量
 message( STATUS "version: ${OpenCV_VERSION}" )
 message( STATUS "libraries: ${OpenCV_LIBS}" )
-message( STATUS "include path: ${OpenCV_INCLUDE_DIRS}" )
+message( STATUS "include path: ${OpenCV_INCLUDE_DIRS}")
+
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 ENDIF(WIN32)
 
