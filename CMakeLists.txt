@@ -1,4 +1,4 @@
-# CMake 最低版本号要求
+﻿# CMake 最低版本号要求
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # 项目信息
@@ -19,7 +19,7 @@ INCLUDE_DIRECTORIES(./ ./MST ./source)
 
 IF(WIN32)
 # Windows平台执行
-INCLUDE($ENV{OPENCV_2413_PREBUILD_DIR}/OpenCVConfig.cmake)
+INCLUDE(F:/opencv2.4.13_prebuild/build/OpenCVConfig.cmake)
 message( STATUS "OpenCV library status:" )              # 输出一下得到的变量
 message( STATUS "version: ${OpenCV_VERSION}" )
 message( STATUS "libraries: ${OpenCV_LIBS}" )
