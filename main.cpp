@@ -98,6 +98,10 @@ int main()
 			double dy = (circles[mst[i].v()][1] - circles[mst[i].w()][1]);
 			double dx = (circles[mst[i].v()][0] - circles[mst[i].w()][0]);
 			theta[2] = atan2(dy, dx) * 180 / 3.14159;
+			if (theta[2] < 0)
+			{
+				theta[2] = theta[2] + 180;
+			}
 			thetaMatrix.push_back(theta);
 
 			cout << "start: " << mst[i].v() << " end: " << mst[i].w() << " weight: " << mst[i].wt() << " theta : " << theta[2] << endl;
