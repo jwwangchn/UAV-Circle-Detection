@@ -58,7 +58,7 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 		{
 			double Th1 = (double)(RedChannel.at<uchar>(j, i) - GreenChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
 			double Th2 = (double)(RedChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
-			if (Th1 > 0.6 && Th2 > 0.5)
+			if (Th1 > R_G_R && Th2 > R_B_R)
 			{
 				RedChannel.at<uchar>(j, i) = 0;
 				GreenChannel.at<uchar>(j, i) = 0;
@@ -81,7 +81,7 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	double AveDiameter = 0;
 	double Rs = 0;
 
-	HoughCircles(img, circles, CV_HOUGH_GRADIENT, 1, 10, 100, 18, 8, 20);
+	HoughCircles(img, circles, CV_HOUGH_GRADIENT, 1, 10, MAX_CANNY, MIN_CANNY, MIN_RADIUS, MAX_RADIUS);
 	if (circles.size() == 0)
 	{
 		pair<vector<vector<double>>, vector<Vec3f>> results;
