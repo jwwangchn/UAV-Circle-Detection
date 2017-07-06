@@ -100,7 +100,7 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 		char words[20];
 		sprintf(words, "%d", i);
 		putText(cimg, words, Point(c[0], c[1]), CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 0, 0));
-		cout << "x：" << c[0] << " y: " << c[1] << " Radius:" << c[2] << endl;
+		cout << "x:" << c[0] << " y:" << c[1] << " Radius:" << c[2] << endl;
 	}
 
 	////计算图中圆直径的均值以及扫描阈值Rs
@@ -141,7 +141,7 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	}
 	cout << " disMat[1][2]: " << disMat[1][2] << endl;
 
-	imshow("detected circles", cimg);
+	//imshow("detected circles", cimg);
 
 	pair<vector<vector<double>>, vector<Vec3f>> results;
 	results.first = disMat;

@@ -24,7 +24,13 @@ static void help()
 int main()
 {
 	//打开图
-	const char *filename = "../image/random1.png";
+<<<<<<< HEAD
+	//const char *filename = "../image/random.png";
+	const char *filename = "../image/realTest4.png";
+=======
+	const char *filename = "../image/real5.jpg";
+	
+>>>>>>> origin/master
 	// const char *filename = "../image/simTest.png";
 	Mat img = imread(filename, 1); //img是彩色的
 	if (img.empty())
@@ -33,7 +39,8 @@ int main()
 		cout << "can not open " << filename << endl;
 		return -1;
 	}
-
+	Size size(1000, 750);
+	resize(img,img,size);
 	//检测圆，得到圆心距离和数量
 	pair<vector<vector<double>>, vector<Vec3f>> results = circleDetection(img);
 	vector<vector<double>> disMat = results.first;

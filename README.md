@@ -5,7 +5,7 @@
 ## 编译方法
 
 - windows
-将根目录下`CMakeLists.txt`文件中的`$ENV{OPENCV_2413_PREBUILD_DIR}`改为自己OpenCV的`build`文件夹路径。
+将根目录下`CMakeLists.txt`文件中的`$ENV{OPENCV_2413_PREBUILD_DIR}`改为自己OpenCV的`build`文件夹路径，使用cmake-gui和Visual Studio进行编译。
 
 - Ubuntu
 安装好OpenCV之后，可以执行`sh run.sh`直接编译运行

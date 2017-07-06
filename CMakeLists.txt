@@ -1,15 +1,15 @@
-# CMake 最低版本号要求
+﻿# CMake 最低版本号要求
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # 项目信息
 PROJECT(uav-circle-detection)
 
-# 生成release版本
-SET(CMAKE_BUILD_TYPE "RELEASE")
+# # 生成release版本
+# SET(CMAKE_BUILD_TYPE "RELEASE")
 
-if (CMAKE_BUILD_TYPE STREQUAL debug)
-    ADD_DEFINITIONS(-D_DEBUG)
-endif ()
+# if (CMAKE_BUILD_TYPE STREQUAL debug)
+#     ADD_DEFINITIONS(-D_DEBUG)
+# endif ()
 
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++11")
@@ -19,7 +19,7 @@ INCLUDE_DIRECTORIES(./ ./MST ./source)
 
 IF(WIN32)
 # Windows平台执行
-INCLUDE($ENV{OPENCV_2413_PREBUILD_DIR}/OpenCVConfig.cmake)
+INCLUDE(F:/opencv2.4.13_prebuild/build/OpenCVConfig.cmake)
 message( STATUS "OpenCV library status:" )              # 输出一下得到的变量
 message( STATUS "version: ${OpenCV_VERSION}" )
 message( STATUS "libraries: ${OpenCV_LIBS}" )
