@@ -15,7 +15,7 @@ double circleDistance(Vec3i A, Vec3i B)
 
 
 // 求解斜率和截距
-pair<double,double> slopeAndIntercept(vector<Vec3f> circlesTemp, int A, int B)
+pair<double,double> slopeAndIntercept(vector<Vec3f> circlesTemp, int A, int B, int max_line, int min_line)
 {
 	pair<double,double> result;
 	double dy = (circlesTemp[A][1] - circlesTemp[B][1]);
@@ -23,7 +23,7 @@ pair<double,double> slopeAndIntercept(vector<Vec3f> circlesTemp, int A, int B)
 	double slope = atan2(dy, dx) * 180 / 3.14159;
 	double k = dy / dx;
 	double intercept = ((double)circles[A][1] / (double)circles[A][0] - (double)circles[B][1] / (double)circles[B][0]) * (1 / ((double)circles[A][0]) - 1 / ((double)circles[B][0]));		
-	double distance = 320 - ((MAX_LINE + MIN_LINE) / 2.0 - (circles[A][1] - k * circles[A][0])) / k;
+	double distance = 320 - ((max_line + min_line) / 2.0 - (circles[A][1] - k * circles[A][0])) / k;
 	if (slope < 0)
 	{
 		slope = slope + 180;
@@ -60,7 +60,6 @@ pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp)
 	double max = circlesTemp[0][1], min = circlesTemp[0][1];
 	for(int i = 0; i < circlesTemp.size(); i++)
 	{
-		cout << "circlesTemp: " << circlesTemp[i][1] << endl;
 		if(max <= circlesTemp[i][1])
 		{
 			indexMax = i;
@@ -72,7 +71,6 @@ pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp)
 			min = circlesTemp[i][1];
 		}
 	}
-	cout << " indexMax: " << indexMax << " indexMin: " << indexMin << endl;
 	result.first = indexMax;
 	result.second = indexMin;
 	return result;
