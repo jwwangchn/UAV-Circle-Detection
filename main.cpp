@@ -42,8 +42,10 @@ int main()
 		//cap >> frame;
 		Mat img = frame;
 
-		const char *filename = "../image/DJI_0003.jpg";
-		img = imread(filename, 1); //imgÊÇ²ÊÉ«µÄ
+		// const char *filename = "../image/DJI_0003.jpg";
+		// const char *filename = "../image/crossroad.jpg";
+		const char *filename = "../image/down.jpg";		
+		img = imread(filename, 1); //imgï¿½Ç²ï¿½É«ï¿½ï¿½
 		if (img.empty())
 		{
 			cout << "empty image" << endl;
@@ -52,7 +54,7 @@ int main()
 		Size size(640, 360);
 		resize(img, img, size);
 		imshow("origin video", img);
-		//¼ì²âÔ²£¬µÃµ½Ô²ÐÄ¾àÀëºÍÊýÁ¿
+		//ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ãµï¿½Ô²ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		pair<vector<vector<double>>, vector<Vec3f>> results = circleDetection(img);
 		vector<vector<double>> disMat = results.first;
 		vector<Vec3f> circles = results.second;
@@ -63,14 +65,14 @@ int main()
 			// continue;
 		}
 
-		//Í¼½ÚµãÊýÁ¿
+		//Í¼ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
 		int V = circles.size();
 
-		//¶¨ÒåÍ¼
+		//ï¿½ï¿½ï¿½ï¿½Í¼
 		SparseGraph<double> g = SparseGraph<double>(V, false);
 		//ReadGraph<SparseGraph<double>, double> readGraph(g, filename);
 
-		//¹¹ÔìÍ¼
+		//ï¿½ï¿½ï¿½ï¿½Í¼
 		for (int i = 0; i < V; i++)
 		{
 			for (int j = 0; j < V; j++)
@@ -81,39 +83,117 @@ int main()
 
 		// Test Lazy Prim MST
 		cout << "Test Lazy Prim MST:" << endl;
-		//¼ÆËã×îÐ¡Éú³ÉÊ÷
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		LazyPrimMST<SparseGraph<double>, double> lazyPrimMST(g);
 
-		//´òÓ¡½á¹û
+		//ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½
 		vector<Edge<double>> mst = lazyPrimMST.mstEdges();
 
+
+		// CrossRoad
+		vector<vector<int>> crossroadMatrix(V);
+
+		for (int i = 0; i < V - 1; i++)
+		{
+			crossroadMatrix[mst[i].v()].push_back(mst[i].w());
+			crossroadMatrix[mst[i].w()].push_back(mst[i].v());
+		}
+
+		vector<vector<double>> distanceCrossroad(6,vector<double>(3));
+		int indexMaxBelow = 0, indexMaxUp = 0;
+		for (int i = 0; i < V; i++)
+		{
+			cout << i << " " << crossroadMatrix[i].size() << endl;
+			if (crossroadMatrix[i].size() == 4)
+			{
+				cout << "find crossroad!!!! " << i << " is the crossroad" << endl;
+				int k = 0;
+				double maxBelow = 0, maxUp = 0;
+				
+				for (int m = 0; m < 3; m++)
+				{
+					for (int n = m + 1; n < 4; n++)
+					{
+						distanceCrossroad[k][0] = crossroadMatrix[i][m];
+						distanceCrossroad[k][1] = crossroadMatrix[i][n];
+						distanceCrossroad[k][2] = circleDistance(circles[crossroadMatrix[i][m]], circles[crossroadMatrix[i][n]]);
+						if(distanceCrossroad[k][2] > maxUp)
+						{
+							maxUp = distanceCrossroad[k][2];
+							indexMaxUp = k;
+						}
+						else if(distanceCrossroad[k][2] > maxBelow)
+						{
+							maxBelow = distanceCrossroad[k][2];
+							indexMaxBelow = k;
+						}
+						k++;
+					}
+				}
+				cout << distanceCrossroad[indexMaxUp][0] << " " <<distanceCrossroad[indexMaxUp][1] << " " << distanceCrossroad[indexMaxBelow][0] << " " << distanceCrossroad[indexMaxBelow][1] << endl;
+			}
+		}
+		double crossRoad_Line1_Slope = slope(circles, distanceCrossroad[indexMaxUp][0], distanceCrossroad[indexMaxUp][1]).first;
+		double crossRoad_Line2_Slope = slope(circles, distanceCrossroad[indexMaxBelow][0], distanceCrossroad[indexMaxBelow][1]).first;
+		int crossRoadPoint1 = 0, crossRoadPoint2 = 0;
+		if(crossRoad_Line1_Slope > 75 && crossRoad_Line1_Slope < 105)
+		{
+			crossRoadPoint1 = distanceCrossroad[indexMaxUp][0];
+			crossRoadPoint2 = distanceCrossroad[indexMaxUp][1];
+		}
+		else
+		{
+			crossRoadPoint1 = distanceCrossroad[indexMaxBelow][0];
+			crossRoadPoint2 = distanceCrossroad[indexMaxBelow][1];
+		}
+		cout << crossRoadPoint1 << " ------crossRoad------ " << crossRoadPoint2 << endl;
+
+
+		//point1 line point2
 		vector<vector<double>> thetaMatrix;
 		vector<double> theta(3);
 		thetaMatrix.clear();
 		for (int i = 0; i < mst.size(); i++)
 		{
-			//cout << "start: " << mst[i].v() << " end: " << mst[i].w() << " weight: " << mst[i].wt() << " theta : " << theta[2] << endl;
+			cout << "start: " << mst[i].v() << " end: " << mst[i].w() << " weight: " << mst[i].wt() << " theta : " << theta[2] << endl;
 			if ((circles[mst[i].v()][1] < MIN_LINE && circles[mst[i].w()][1] > MAX_LINE) || (circles[mst[i].w()][1] < MIN_LINE && circles[mst[i].v()][1] > MAX_LINE))
 			{
 				theta[0] = mst[i].v();
 				theta[1] = mst[i].w();
-				double dy = (circles[mst[i].v()][1] - circles[mst[i].w()][1]);
-				double dx = (circles[mst[i].v()][0] - circles[mst[i].w()][0]);
-				theta[2] = atan2(dy, dx) * 180 / 3.14159;
-				if (theta[2] < 0)
-				{
-					theta[2] = theta[2] + 180;
-				}
+				pair<double,double> slopeResult = slope(circles, mst[i].v(), mst[i].w());
+				theta[2] = slopeResult.first;
+				double k = slopeResult.second;
 				thetaMatrix.push_back(theta);
+
 				double intercept = ((double)circles[mst[i].v()][1] / (double)circles[mst[i].v()][0] - (double)circles[mst[i].w()][1] / (double)circles[mst[i].w()][0]) * (1 / ((double)circles[mst[i].v()][0]) - 1 / ((double)circles[mst[i].w()][0]));
-				double k = dy/dx;
+				
 				double distance = 320 - ((MAX_LINE + MIN_LINE) / 2.0 - (circles[mst[i].v()][1] - k * circles[mst[i].v()][0])) / k;
 				cout << mst[i].v() << "---------------" << mst[i].w() << endl;
 				cout << "distance: " << distance << endl;
-				cout << "Line theta: " << theta[2] << endl;
+				cout << "theta: " << theta[2] << endl;
 			}
 		}
+		//point1 line point2
+		double thetaSinglePoint = 0;
+		double distanceSinglePoint = 0;
+		pair<int,int> result_Max_Min = Y_Point_Max_Min(circles);
+		cout << circles[result_Max_Min.first][1] << " &&& " << circles[result_Max_Min.second][1] << endl;
+		//Up
+		if((MAX_LINE + MIN_LINE) / 2.0 > circles[result_Max_Min.first][1])
+		{
+			
+			thetaSinglePoint = slope(circles, result_Max_Min.first, crossroadMatrix[result_Max_Min.first][0]).first;
+			distanceSinglePoint = 320 - circles[result_Max_Min.first][0];
+		}
+		//Down
+		if((MAX_LINE + MIN_LINE) / 2.0 < circles[result_Max_Min.second][1])
+		{
+			// cout << result_Max_Min.first << " ---- " << crossroadMatrix[result_Max_Min.first][0] << endl;
+			thetaSinglePoint = slope(circles, result_Max_Min.second, crossroadMatrix[result_Max_Min.second][0]).first;
+			distanceSinglePoint = 320 - circles[result_Max_Min.second][0];
+		}
+		cout << "thetaSinglePoint: " << thetaSinglePoint <<  " distanceSinglePoint: "<<distanceSinglePoint<<endl;
 		cout << "The MST weight is: " << lazyPrimMST.result() << endl;
 		cout << endl;
 

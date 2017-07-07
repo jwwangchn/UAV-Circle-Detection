@@ -13,6 +13,20 @@ double circleDistance(Vec3i A, Vec3i B)
 	return dis;
 }
 
+pair<double,double> slope(vector<Vec3f> circlesTemp, int A, int B)
+{
+	pair<double,double> slopeResult;
+	double dy = (circlesTemp[A][1] - circlesTemp[B][1]);
+	double dx = (circlesTemp[A][0] - circlesTemp[B][0]);
+	slopeResult.first = atan2(dy, dx) * 180 / 3.14159;
+	slopeResult.second = dy / dx;
+	if (slopeResult.first < 0)
+	{
+		slopeResult.first = slopeResult.first + 180;
+	}
+	return slopeResult;
+}
+
 //画圆
 void paintCircles(Mat img)
 {
@@ -29,6 +43,27 @@ void paintCircles(Mat img)
 		imshow("Detection Result", multiChannelImg);
 		// cout << "x:" << c[0] << " y:" << c[1] << " Radius:" << c[2] << endl;
 	}
+}
+
+pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp)
+{
+	pair<int,int> result;
+	int indexMax = 0, indexMin = 0;
+	double max = circlesTemp[0][1], min = circlesTemp[0][1];
+	for(int i = 0; i < circlesTemp.size(); i++)
+	{
+		if(max < circlesTemp[i][1])
+		{
+			indexMax = i;
+		}
+		if(min > circlesTemp[i][1])
+		{
+			indexMin = i;
+		}
+	}
+	result.first = indexMax;
+	result.second = indexMin;
+	return result;
 }
 
 // // 寻找左下角的圆, 作为起始圆 int minDistance = INT_MAX;
@@ -94,40 +129,6 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 #ifdef SHOW_DETECTION_RESULT
 	paintCircles(img);
 #endif
-
-	////将起始圆放到circle的起始位置
-	//if (circles.size() <= 0)
-	//{
-	//	cout << "no circle found" << endl;
-	//	return 0;
-	//}
-	//switchCircles(0, minXYIndex);
-
-	////依次找到后续的圆
-	//for (int i = 0; i < circles.size() - 1; i++)
-	//{
-	//	minXYIndex = minDistanceCircle(circles, circles[i], i);
-	//	switchCircles(i + 1, minXYIndex);
-	//}
-
-	////计算图中圆直径的均值以及扫描阈值Rs
-	//for (size_t i = 0; i < circles.size(); i++)
-	//{
-	//	AveDiameter = AveDiameter + circles[i][2];
-	//}
-	//AveDiameter = 2 * AveDiameter / circles.size();
-	//Rs = 4 * AveDiameter;
-	//cout << "平均直径： " << AveDiameter << "  扫描半径： " << Rs << endl;
-
-	////连线
-	//for (size_t i = 0; i < circles.size() - 1; i++)
-	//{
-	//	Vec3i pointBegin = circles[i];
-	//	Vec3i pointEnd = circles[i + 1];
-	//	line(cimg, Point(pointBegin[0], pointBegin[1]), Point(pointEnd[0], pointEnd[1]), Scalar(255, 0, 0), 1, CV_AA);
-	//}
-
-	//计算斜率及偏角
 
 	//计算距离矩阵
 	vector<vector<double>> disMat(circles.size());

@@ -26,5 +26,7 @@ using namespace cv;
 double circleDistance(Vec3i A, Vec3i B);
 void paintCircles(Mat img);
 pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img);
+pair<double,double> slope(vector<Vec3f> circlesTemp, int A, int B);
+pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp);
 
 #endif
