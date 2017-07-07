@@ -12,9 +12,6 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#define MIN_LINE 180
-#define MAX_LINE 180
-
 using namespace std;
 using namespace cv;
 
@@ -29,6 +26,9 @@ int main()
 {
 	clock_t start, finish;
 	double duration;
+	int flagSituation = 0;	//1--十字路口, 2--普通情况, 3--起点, 4--终点
+	double slope = 0;
+	double intercept = 0;
 	VideoCapture cap("../video/DJI_0002.MOV");
 	if (!cap.isOpened())
 	{
@@ -45,7 +45,7 @@ int main()
 		// const char *filename = "../image/DJI_0003.jpg";
 		// const char *filename = "../image/crossroad.jpg";
 		const char *filename = "../image/up.jpg";		
-		img = imread(filename, 1); //img�ǲ�ɫ��
+		img = imread(filename, 1);
 		if (img.empty())
 		{
 			cout << "empty image" << endl;
@@ -54,7 +54,8 @@ int main()
 		Size size(640, 360);
 		resize(img, img, size);
 		imshow("origin video", img);
-		//���Բ���õ�Բ�ľ��������
+
+		//圆检测
 		pair<vector<vector<double>>, vector<Vec3f>> results = circleDetection(img);
 		vector<vector<double>> disMat = results.first;
 		vector<Vec3f> circles = results.second;
@@ -65,14 +66,14 @@ int main()
 			// continue;
 		}
 
-		//ͼ�ڵ�����
+		//图节点数量
 		int V = circles.size();
 
-		//����ͼ
+		//构造图
 		SparseGraph<double> g = SparseGraph<double>(V, false);
 		//ReadGraph<SparseGraph<double>, double> readGraph(g, filename);
 
-		//����ͼ
+		
 		for (int i = 0; i < V; i++)
 		{
 			for (int j = 0; j < V; j++)
@@ -82,32 +83,33 @@ int main()
 		}
 
 		// Test Lazy Prim MST
-		cout << "Test Lazy Prim MST:" << endl;
-		//������С������
+		//求解最小生成树
 
 		LazyPrimMST<SparseGraph<double>, double> lazyPrimMST(g);
 
-		//��ӡ���
+		//MST结果
 		vector<Edge<double>> mst = lazyPrimMST.mstEdges();
 
 
-		// CrossRoad
+		// [1] 十字路口
 		vector<vector<int>> crossroadMatrix(V);
-
+		
+		//找到每个节点相连的节点
 		for (int i = 0; i < V - 1; i++)
 		{
 			crossroadMatrix[mst[i].v()].push_back(mst[i].w());
 			crossroadMatrix[mst[i].w()].push_back(mst[i].v());
 		}
-
+		//十字路口节点距离矩阵
 		vector<vector<double>> distanceCrossroad(6,vector<double>(3));
 		int indexMaxBelow = 0, indexMaxUp = 0;
 		for (int i = 0; i < V; i++)
 		{
-			cout << i << " " << crossroadMatrix[i].size() << endl;
+			// cout << i << " " << crossroadMatrix[i].size() << endl;
 			if (crossroadMatrix[i].size() == 4)
 			{
-				cout << "find crossroad!!!! " << i << " is the crossroad" << endl;
+				cout << "发现十字路口!!!! " << i << " 节点是十字路口" << endl;
+				flagSituation = 1;
 				int k = 0;
 				double maxBelow = 0, maxUp = 0;
 				
@@ -131,71 +133,76 @@ int main()
 						k++;
 					}
 				}
-				cout << distanceCrossroad[indexMaxUp][0] << " " <<distanceCrossroad[indexMaxUp][1] << " " << distanceCrossroad[indexMaxBelow][0] << " " << distanceCrossroad[indexMaxBelow][1] << endl;
+				//cout << distanceCrossroad[indexMaxUp][0] << " " <<distanceCrossroad[indexMaxUp][1] << " " << distanceCrossroad[indexMaxBelow][0] << " " << distanceCrossroad[indexMaxBelow][1] << endl;
 			}
 		}
-		double crossRoad_Line1_Slope = slope(circles, distanceCrossroad[indexMaxUp][0], distanceCrossroad[indexMaxUp][1]).first;
-		double crossRoad_Line2_Slope = slope(circles, distanceCrossroad[indexMaxBelow][0], distanceCrossroad[indexMaxBelow][1]).first;
-		int crossRoadPoint1 = 0, crossRoadPoint2 = 0;
-		if(crossRoad_Line1_Slope > 75 && crossRoad_Line1_Slope < 105)
+		//十字路口进入
+		if(flagSituation == 1)
 		{
-			crossRoadPoint1 = distanceCrossroad[indexMaxUp][0];
-			crossRoadPoint2 = distanceCrossroad[indexMaxUp][1];
+			double crossRoad_Line1_Slope = slope(circles, distanceCrossroad[indexMaxUp][0], distanceCrossroad[indexMaxUp][1]).first;
+			double crossRoad_Line2_Slope = slope(circles, distanceCrossroad[indexMaxBelow][0], distanceCrossroad[indexMaxBelow][1]).first;
+			int crossRoadPoint1 = 0, crossRoadPoint2 = 0;
+			if(crossRoad_Line1_Slope > 75 && crossRoad_Line1_Slope < 105)
+			{
+				crossRoadPoint1 = distanceCrossroad[indexMaxUp][0];
+				crossRoadPoint2 = distanceCrossroad[indexMaxUp][1];
+			}
+			else
+			{
+				crossRoadPoint1 = distanceCrossroad[indexMaxBelow][0];
+				crossRoadPoint2 = distanceCrossroad[indexMaxBelow][1];
+			}
+			pair<double,double> slopeAndInterceptResult = slopeAndIntercept(circles, crossRoadPoint1, crossRoadPoint2);
+			slope = slopeAndInterceptResult.first;
+			intercept = slopeAndInterceptResult.second;
+			cout << "十字路口: " << crossRoadPoint1 << " ------crossRoad------ " << crossRoadPoint2 << endl;
+			cout << "intercept: " << intercept << endl;
+			cout << "slope: " << slope << endl;
 		}
-		else
-		{
-			crossRoadPoint1 = distanceCrossroad[indexMaxBelow][0];
-			crossRoadPoint2 = distanceCrossroad[indexMaxBelow][1];
-		}
-		cout << crossRoadPoint1 << " ------crossRoad------ " << crossRoadPoint2 << endl;
-
-
-		//point1 line point2
+		//[2] 点--线--点
 		vector<vector<double>> thetaMatrix;
 		vector<double> theta(3);
 		thetaMatrix.clear();
 		for (int i = 0; i < mst.size(); i++)
 		{
-			cout << "start: " << mst[i].v() << " end: " << mst[i].w() << " weight: " << mst[i].wt() << " theta : " << theta[2] << endl;
+			// cout << "start: " << mst[i].v() << " end: " << mst[i].w() << " weight: " << mst[i].wt() << " theta : " << theta[2] << endl;
 			if ((circles[mst[i].v()][1] < MIN_LINE && circles[mst[i].w()][1] > MAX_LINE) || (circles[mst[i].w()][1] < MIN_LINE && circles[mst[i].v()][1] > MAX_LINE))
 			{
 				theta[0] = mst[i].v();
 				theta[1] = mst[i].w();
-				pair<double,double> slopeResult = slope(circles, mst[i].v(), mst[i].w());
-				theta[2] = slopeResult.first;
-				double k = slopeResult.second;
+				pair<double,double> slopeAndInterceptResult = slopeAndIntercept(circles, mst[i].v(), mst[i].w());
+				theta[2] = slopeAndInterceptResult.first;
+				slope = slopeAndInterceptResult.first;
+				intercept = slopeAndInterceptResult.second;
 				thetaMatrix.push_back(theta);
-
-				double intercept = ((double)circles[mst[i].v()][1] / (double)circles[mst[i].v()][0] - (double)circles[mst[i].w()][1] / (double)circles[mst[i].w()][0]) * (1 / ((double)circles[mst[i].v()][0]) - 1 / ((double)circles[mst[i].w()][0]));
 				
-				double distance = 320 - ((MAX_LINE + MIN_LINE) / 2.0 - (circles[mst[i].v()][1] - k * circles[mst[i].v()][0])) / k;
-				cout << mst[i].v() << "---------------" << mst[i].w() << endl;
-				cout << "distance: " << distance << endl;
-				cout << "theta: " << theta[2] << endl;
+				cout << "普通: " << mst[i].v() << "---------------" << mst[i].w() << endl;
+				cout << "intercept: " << intercept << endl;
+				cout << "slope: " << slope << endl;
 			}
 		}
-		//point1 line point2
+		//[3-4] 起点和终点
 		double thetaSinglePoint = 0;
 		double distanceSinglePoint = 0;
 		pair<int,int> result_Max_Min = Y_Point_Max_Min(circles);
-		cout << circles[result_Max_Min.first][1] << " &&& " << circles[result_Max_Min.second][1] << endl;
-		//Up
+		//Up(起点)
 		if((MAX_LINE + MIN_LINE) / 2.0 > circles[result_Max_Min.first][1])
 		{
-			cout << circles[result_Max_Min.first][1] << endl;
-			cout << result_Max_Min.first << " ---- " << crossroadMatrix[result_Max_Min.first][0] << endl;
-			thetaSinglePoint = slope(circles, result_Max_Min.first, crossroadMatrix[result_Max_Min.first][0]).first;
-			distanceSinglePoint = 320 - circles[result_Max_Min.first][0];
+			pair<double,double> slopeAndInterceptResult = slopeAndIntercept(circles, result_Max_Min.first, crossroadMatrix[result_Max_Min.first][0]).first;
+			slope = slopeAndInterceptResult.first;
+			intercept = 320 - circles[result_Max_Min.first][0];
+			cout << "起点: " << result_Max_Min.first << "--------------- " << endl;
 		}
-		//Down
+		//Down(终点)
 		if((MAX_LINE + MIN_LINE) / 2.0 < circles[result_Max_Min.second][1])
 		{
-			thetaSinglePoint = slope(circles, result_Max_Min.second, crossroadMatrix[result_Max_Min.second][0]).first;
-			distanceSinglePoint = 320 - circles[result_Max_Min.second][0];
+			pair<double,double> slopeAndInterceptResult = slopeAndIntercept(circles, result_Max_Min.second, crossroadMatrix[result_Max_Min.second][0]).first;
+			slope = slopeAndInterceptResult.first;
+			intercept = 320 - circles[result_Max_Min.second][0];
+			cout << "终点: " << "--------------- " << result_Max_Min.second << endl;
 		}
-		cout << "thetaSinglePoint: " << thetaSinglePoint <<  " distanceSinglePoint: "<<distanceSinglePoint<<endl;
-		cout << "The MST weight is: " << lazyPrimMST.result() << endl;
-		cout << endl;
+		cout << "intercept: " << intercept << endl;
+		cout << "slope: " << slope << endl;
 
 		for (int i = 0; i < circles.size() - 1; i++)
 		{
@@ -204,6 +211,7 @@ int main()
 			line(img, Point(pointBegin[0], pointBegin[1]), Point(pointEnd[0], pointEnd[1]), Scalar(0, 0, 255), 1, CV_AA);
 		}
 
+		//计时器
 		finish = clock();
 		duration = (double)(finish - start) / CLOCKS_PER_SEC;
 

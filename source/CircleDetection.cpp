@@ -13,19 +13,27 @@ double circleDistance(Vec3i A, Vec3i B)
 	return dis;
 }
 
-pair<double,double> slope(vector<Vec3f> circlesTemp, int A, int B)
+
+// 求解斜率和截距
+pair<double,double> slopeAndIntercept(vector<Vec3f> circlesTemp, int A, int B)
 {
-	pair<double,double> slopeResult;
+	pair<double,double> result;
 	double dy = (circlesTemp[A][1] - circlesTemp[B][1]);
 	double dx = (circlesTemp[A][0] - circlesTemp[B][0]);
-	slopeResult.first = atan2(dy, dx) * 180 / 3.14159;
-	slopeResult.second = dy / dx;
-	if (slopeResult.first < 0)
+	double slope = atan2(dy, dx) * 180 / 3.14159;
+	double k = dy / dx;
+	double intercept = ((double)circles[A][1] / (double)circles[A][0] - (double)circles[B][1] / (double)circles[B][0]) * (1 / ((double)circles[A][0]) - 1 / ((double)circles[B][0]));		
+	double distance = 320 - ((MAX_LINE + MIN_LINE) / 2.0 - (circles[A][1] - k * circles[A][0])) / k;
+	if (slope < 0)
 	{
-		slopeResult.first = slopeResult.first + 180;
+		slope = slope + 180;
 	}
-	return slopeResult;
+	result.first = slope;
+	result.second = distance;
+	return result;
 }
+
+
 
 //画圆
 void paintCircles(Mat img)
@@ -44,7 +52,7 @@ void paintCircles(Mat img)
 		// cout << "x:" << c[0] << " y:" << c[1] << " Radius:" << c[2] << endl;
 	}
 }
-
+//找到所有圆中, Y 坐标最大和最小的点
 pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp)
 {
 	pair<int,int> result;

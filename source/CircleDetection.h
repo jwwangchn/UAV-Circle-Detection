@@ -26,13 +26,17 @@
 #define MAX_CANNY 100
 #define MIN_CANNY 15
 
+#define MIN_LINE 180
+#define MAX_LINE 180
+
+
 using namespace std;
 using namespace cv;
 
 double circleDistance(Vec3i A, Vec3i B);
 void paintCircles(Mat img);
 pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img);
-pair<double,double> slope(vector<Vec3f> circlesTemp, int A, int B);
+pair<double,double> slopeAndIntercept(vector<Vec3f> circlesTemp, int A, int B);
 pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp);
 
 #endif
