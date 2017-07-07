@@ -44,7 +44,7 @@ int main()
 
 		// const char *filename = "../image/DJI_0003.jpg";
 		// const char *filename = "../image/crossroad.jpg";
-		const char *filename = "../image/down.jpg";
+		const char *filename = "../image/random1.png";
 		img = imread(filename, 1);
 		if (img.empty())
 		{
