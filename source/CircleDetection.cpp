@@ -52,15 +52,19 @@ pair<int,int> Y_Point_Max_Min(vector<Vec3f> circlesTemp)
 	double max = circlesTemp[0][1], min = circlesTemp[0][1];
 	for(int i = 0; i < circlesTemp.size(); i++)
 	{
-		if(max < circlesTemp[i][1])
+		cout << "circlesTemp: " << circlesTemp[i][1] << endl;
+		if(max <= circlesTemp[i][1])
 		{
 			indexMax = i;
+			max = circlesTemp[i][1];
 		}
-		if(min > circlesTemp[i][1])
+		if(min >= circlesTemp[i][1])
 		{
 			indexMin = i;
+			min = circlesTemp[i][1];
 		}
 	}
+	cout << " indexMax: " << indexMax << " indexMin: " << indexMin << endl;
 	result.first = indexMax;
 	result.second = indexMin;
 	return result;
@@ -91,9 +95,16 @@ pair<vector<vector<double>>, vector<Vec3f>> circleDetection(Mat img)
 	{
 		for (int j = 0; j < img.rows; j++)
 		{
-			double Th1 = (double)(RedChannel.at<uchar>(j, i) - GreenChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
-			double Th2 = (double)(RedChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
-			if (Th1 > R_G_R && Th2 > R_B_R)
+			double Th1_Red = (double)(RedChannel.at<uchar>(j, i) - GreenChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
+			double Th2_Red = (double)(RedChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)RedChannel.at<uchar>(j, i) + 0.1);
+
+			double Th1_Yellow = (double)(RedChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)BlueChannel.at<uchar>(j, i) + 0.1);
+			double Th2_Yellow = (double)(GreenChannel.at<uchar>(j, i) - BlueChannel.at<uchar>(j, i)) / ((double)GreenChannel.at<uchar>(j, i) + 0.1);
+
+			double Th1_Blue = (double)(BlueChannel.at<uchar>(j, i) - RedChannel.at<uchar>(j, i)) / ((double)BlueChannel.at<uchar>(j, i) + 0.1);
+			double Th2_Blue = (double)(BlueChannel.at<uchar>(j, i) - GreenChannel.at<uchar>(j, i)) / ((double)BlueChannel.at<uchar>(j, i) + 0.1);
+
+			if ((Th1_Red > R_G_R_RED_CIRCLE && Th2_Red > R_B_R_RED_CIRCLE) || ((Th1_Yellow > R_B_R_YELLOW_CIRCLE && Th2_Yellow > G_B_G_YELLOW_CIRCLE)) || (Th1_Blue > B_R_B_BLUE_CIRCLE && Th2_Blue > B_G_B_BLUE_CIRCLE))
 			{
 				RedChannel.at<uchar>(j, i) = 0;
 				GreenChannel.at<uchar>(j, i) = 0;

@@ -44,7 +44,7 @@ int main()
 
 		// const char *filename = "../image/DJI_0003.jpg";
 		// const char *filename = "../image/crossroad.jpg";
-		const char *filename = "../image/down.jpg";		
+		const char *filename = "../image/up.jpg";		
 		img = imread(filename, 1); //img�ǲ�ɫ��
 		if (img.empty())
 		{
@@ -182,14 +182,14 @@ int main()
 		//Up
 		if((MAX_LINE + MIN_LINE) / 2.0 > circles[result_Max_Min.first][1])
 		{
-			
+			cout << circles[result_Max_Min.first][1] << endl;
+			cout << result_Max_Min.first << " ---- " << crossroadMatrix[result_Max_Min.first][0] << endl;
 			thetaSinglePoint = slope(circles, result_Max_Min.first, crossroadMatrix[result_Max_Min.first][0]).first;
 			distanceSinglePoint = 320 - circles[result_Max_Min.first][0];
 		}
 		//Down
 		if((MAX_LINE + MIN_LINE) / 2.0 < circles[result_Max_Min.second][1])
 		{
-			// cout << result_Max_Min.first << " ---- " << crossroadMatrix[result_Max_Min.first][0] << endl;
 			thetaSinglePoint = slope(circles, result_Max_Min.second, crossroadMatrix[result_Max_Min.second][0]).first;
 			distanceSinglePoint = 320 - circles[result_Max_Min.second][0];
 		}

@@ -14,8 +14,14 @@
 #define MIN_RADIUS 2
 #define MAX_RADIUS 20
 
-#define R_G_R 0.5
-#define R_B_R 0.45
+#define R_G_R_RED_CIRCLE 0.5
+#define R_B_R_RED_CIRCLE 0.45
+
+#define G_B_G_YELLOW_CIRCLE 0.2
+#define R_B_R_YELLOW_CIRCLE 0.2
+
+#define B_R_B_BLUE_CIRCLE 0.45
+#define B_G_B_BLUE_CIRCLE 0.5
 
 #define MAX_CANNY 100
 #define MIN_CANNY 15
